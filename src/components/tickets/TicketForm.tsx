@@ -2,7 +2,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useMemo, useState } from "react";
 import { useFieldArray, useForm, useWatch } from "react-hook-form";
 import { z } from "zod";
-import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Input, Label, SelectAria } from "../sui";
+import { Button, Card, CardContent, CardDescription, CardHeader, CardTitle, Label, SelectAria } from "../sui";
+import { Input } from "../ui/input";
 import type { Ticket, TicketPriority, TicketStatus } from "../../services";
 
 const ticketFormSchema = z.object({

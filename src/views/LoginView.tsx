@@ -13,9 +13,9 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-  Input,
   Label,
 } from "../components/sui";
+import { Input } from "../components/ui/input";
 import { authService } from "../services";
 import { useAuthStore } from "../stores";
 

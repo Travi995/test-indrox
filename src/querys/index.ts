@@ -40,8 +40,15 @@ export function useUpdateTicketMutation() {
   const queryClient = useQueryClient();
 
   return useMutation({
-    mutationFn: ({ id, payload }: { id: string; payload: Omit<Ticket, "id" | "code" | "createdAt" | "updatedAt"> }) =>
-      ticketsService.update(id, payload),
+    mutationFn: ({
+      id,
+      payload,
+      expectedUpdatedAt,
+    }: {
+      id: string;
+      payload: Omit<Ticket, "id" | "code" | "createdAt" | "updatedAt">;
+      expectedUpdatedAt: string;
+    }) => ticketsService.update(id, payload, expectedUpdatedAt),
     onSuccess: (ticket) => {
       queryClient.setQueryData(ticketKeys.detail(ticket.id), ticket);
       queryClient.invalidateQueries({ queryKey: ticketKeys.all });

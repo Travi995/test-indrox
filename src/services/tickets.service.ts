@@ -1,5 +1,15 @@
+import { AxiosError } from "axios";
 import { http } from "../request";
 import type { ListTicketsParams, Ticket, TicketsListResult } from "../interfaces/ticket.interface";
+
+export interface TicketConflictError {
+  code: "TICKET_CONFLICT";
+  message: string;
+  currentTicket: Ticket;
+}
+
+export const isTicketConflictError = (error: unknown): error is AxiosError<TicketConflictError> =>
+  error instanceof AxiosError && error.response?.status === 409 && error.response.data?.code === "TICKET_CONFLICT";
 
 export const ticketsService = {
   list: async (params: ListTicketsParams = {}, signal?: AbortSignal): Promise<TicketsListResult> => {
@@ -71,22 +81,28 @@ export const ticketsService = {
   update: async (
     id: string,
     payload: Omit<Ticket, "id" | "code" | "createdAt" | "updatedAt">,
+    expectedUpdatedAt: string,
     signal?: AbortSignal,
   ): Promise<Ticket> => {
     const { data } = await http.put<Ticket>(
       `/tickets/${id}`,
       {
         ...payload,
-        updatedAt: new Date().toISOString(),
+        expectedUpdatedAt,
       },
-      { signal },
+      {
+        headers: {
+          "If-Unmodified-Since": expectedUpdatedAt,
+        },
+        signal,
+      },
     );
     return data;
   },
   patchStatus: async (id: string, status: Ticket["status"], signal?: AbortSignal): Promise<Ticket> => {
     const { data } = await http.patch<Ticket>(
-      `/tickets/${id}`,
-      { status, updatedAt: new Date().toISOString() },
+      `/tickets/${id}/status`,
+      { status },
       { signal },
     );
     return data;

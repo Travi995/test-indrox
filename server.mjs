@@ -48,7 +48,7 @@ const ensureAuth = async (req, res, next) => {
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", ALLOWED_ORIGIN);
   res.setHeader("Access-Control-Allow-Methods", "GET,POST,PUT,PATCH,DELETE,OPTIONS");
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization");
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization, If-Unmodified-Since");
 
   if (req.method === "OPTIONS") {
     res.status(204).send("");
@@ -126,6 +126,74 @@ app.get("/tickets", (req, res) => {
   };
 
   res.json(payload);
+});
+
+app.put("/tickets/:id", json(), async (req, res) => {
+  const { id } = req.params;
+  const expectedUpdatedAt =
+    req.headers["if-unmodified-since"] ?? req.body?.expectedUpdatedAt ?? req.body?.updatedAt ?? null;
+  const index = db.data.tickets.findIndex((ticket) => String(ticket.id) === String(id));
+
+  if (index === -1) {
+    res.status(404).json({ message: "Ticket no encontrado" });
+    return;
+  }
+
+  const currentTicket = db.data.tickets[index];
+  if (expectedUpdatedAt && currentTicket.updatedAt !== expectedUpdatedAt) {
+    res.status(409).json({
+      code: "TICKET_CONFLICT",
+      message: "El ticket fue modificado por otro usuario. Recarga e intenta nuevamente.",
+      currentTicket,
+    });
+    return;
+  }
+
+  const payload = { ...req.body };
+  delete payload.id;
+  delete payload.code;
+  delete payload.createdAt;
+  delete payload.expectedUpdatedAt;
+
+  const updatedTicket = {
+    ...currentTicket,
+    ...payload,
+    id: currentTicket.id,
+    code: currentTicket.code,
+    createdAt: currentTicket.createdAt,
+    updatedAt: new Date().toISOString(),
+  };
+
+  db.data.tickets[index] = updatedTicket;
+  await db.write();
+  res.json(updatedTicket);
+});
+
+app.patch("/tickets/:id/status", json(), async (req, res) => {
+  const { id } = req.params;
+  const index = db.data.tickets.findIndex((ticket) => String(ticket.id) === String(id));
+  if (index === -1) {
+    res.status(404).json({ message: "Ticket no encontrado" });
+    return;
+  }
+
+  const status = req.body?.status;
+  const validStatuses = new Set(["OPEN", "IN_PROGRESS", "RESOLVED", "CLOSED"]);
+  if (!validStatuses.has(status)) {
+    res.status(400).json({ message: "Estado invalido" });
+    return;
+  }
+
+  const currentTicket = db.data.tickets[index];
+  const updatedTicket = {
+    ...currentTicket,
+    status,
+    updatedAt: new Date().toISOString(),
+  };
+
+  db.data.tickets[index] = updatedTicket;
+  await db.write();
+  res.json(updatedTicket);
 });
 app.use(jsonServerApp);
 

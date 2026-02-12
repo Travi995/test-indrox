@@ -6,6 +6,7 @@ Mini modulo ERP/ticketera con autenticacion JWT mock, rutas protegidas, listado 
 
 - React + Vite + TypeScript
 - Tailwind CSS
+- shadcn/ui (style `new-york`)
 - Zustand
 - TanStack React Query
 - React Hook Form + Zod
@@ -74,6 +75,7 @@ npm run typecheck
 - `src/views`: pantallas (`/login`, `/app/tickets`)
 - `src/request`: cliente Axios e interceptores
 - `src/utils`: helpers (JWT)
+- `components.json`: configuracion de shadcn/ui (`new-york`)
 - `server.mjs`: mock API y login JWT
 - `db.json`: datos mock
 
@@ -84,6 +86,7 @@ npm run typecheck
 - La sesion persiste en localStorage solo con `user` y `token` usando `partialize`.
 - El listado de tickets usa paginacion server-like y filtros en backend mock.
 - El cambio de estado de ticket usa optimistic update con rollback.
+- Para concurrencia en edicion, se envia `If-Unmodified-Since` con el `updatedAt` conocido por el cliente.
 
 ## Auth y expiracion
 
@@ -116,6 +119,22 @@ Esto garantiza cache separada por filtros, pagina, pageSize y sort.
 - `PUT /tickets/:id`
 - `PATCH /tickets/:id/status`
 
+## Concurrencia (409)
+
+- En `PUT /tickets/:id` el backend compara el valor recibido en `If-Unmodified-Since` contra `ticket.updatedAt`.
+- Si no coincide, responde `409` con:
+  - `code: "TICKET_CONFLICT"`
+  - `message`
+  - `currentTicket` (version vigente en servidor)
+- El frontend detecta el `409`, muestra mensaje de conflicto y recarga el ticket para editar sobre la ultima version.
+
+## Tests
+
+Se agrego base de tests con Vitest + React Testing Library:
+
+- `src/routes/ProtectedRoute.test.tsx`: valida redireccion a `/login` sin sesion.
+- `src/views/LoginView.test.tsx`: valida errores de formulario en submit vacio.
+
 ## Notas
 
-- El manejo de conflicto `409` y tests automatizados no estan incluidos en esta iteracion.
+- Se mantiene JWT mock con expiracion y limpieza de cache de React Query en logout.

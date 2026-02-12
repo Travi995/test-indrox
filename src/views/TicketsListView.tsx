@@ -7,6 +7,7 @@ import { Button, Card, CardContent, SelectAria } from "../components/sui";
 import { TicketDetailDialog, TicketFilters, TicketForm, TicketsMobileList, TicketsSkeleton, TicketsTable } from "../components/tickets";
 import type { TicketFormValues } from "../components/tickets/TicketForm";
 import { useCreateTicketMutation, useTicketDetailQuery, useTicketsListQuery, useUpdateTicketMutation } from "../querys";
+import { isTicketConflictError } from "../services";
 import type { TicketPriority, TicketSort, TicketStatus } from "../types";
 
 export function TicketsListView() {
@@ -70,9 +71,24 @@ export function TicketsListView() {
 
   const onEditSubmit = async (values: TicketFormValues) => {
     if (!editTicketId) return;
-    await updateTicketMutation.mutateAsync({ id: editTicketId, payload: values });
-    toast.success("Ticket actualizado correctamente.");
-    setEditTicketId(null);
+    if (!editTicketQuery.data?.updatedAt) return;
+
+    try {
+      await updateTicketMutation.mutateAsync({
+        id: editTicketId,
+        payload: values,
+        expectedUpdatedAt: editTicketQuery.data.updatedAt,
+      });
+      toast.success("Ticket actualizado correctamente.");
+      setEditTicketId(null);
+    } catch (error) {
+      if (isTicketConflictError(error)) {
+        toast.error("Conflicto de edicion: el ticket cambio en el servidor. Recargamos la version actual.");
+        await editTicketQuery.refetch();
+        return;
+      }
+      toast.error("No fue posible actualizar el ticket.");
+    }
   };
 
   return (
