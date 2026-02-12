@@ -112,6 +112,7 @@ npm run test:run
 
 ## Auth y expiracion
 
+- **Credenciales de prueba** (usuarios en `db.json`, mock API): para iniciar sesion en la app usa **Correo** `admin@indrox.local` y **Contraseña** `12345678`.
 - Login: `POST /auth/login` retorna `{ accessToken, user }`.
 - El token se guarda en `authStore`.
 - Rutas protegidas en `ProtectedRoute`.
