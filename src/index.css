@@ -57,3 +57,47 @@ body {
 .scrollbar-indrox::-webkit-scrollbar-thumb:hover {
   background: linear-gradient(to bottom, rgba(96, 165, 250, 0.85), rgba(129, 140, 248, 0.85));
 }
+
+/* Loader vista inicial (animación SVG) */
+.loader {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.loader .container {
+  --uib-size: 100px;
+  --uib-color: rgb(59, 130, 246);
+  --uib-speed: 1.4s;
+  --uib-bg-opacity: 0.1;
+  height: var(--uib-size);
+  width: var(--uib-size);
+  transform-origin: center;
+  overflow: visible;
+}
+
+.loader .car {
+  fill: none;
+  stroke: var(--uib-color);
+  stroke-dasharray: 15, 85;
+  stroke-dashoffset: 0;
+  stroke-linecap: round;
+  animation: loader-travel var(--uib-speed) linear infinite;
+  will-change: stroke-dasharray, stroke-dashoffset;
+  transition: stroke 0.5s ease;
+}
+
+.loader .track {
+  stroke: var(--uib-color);
+  opacity: var(--uib-bg-opacity);
+  transition: stroke 0.5s ease;
+}
+
+@keyframes loader-travel {
+  0% {
+    stroke-dashoffset: 0;
+  }
+  100% {
+    stroke-dashoffset: -100;
+  }
+}
