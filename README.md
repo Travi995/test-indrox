@@ -64,6 +64,18 @@ Typecheck:
 npm run typecheck
 ```
 
+Tests (Vitest + React Testing Library):
+
+```bash
+npm run test
+```
+
+Tests una sola ejecucion:
+
+```bash
+npm run test:run
+```
+
 ## Estructura de carpetas
 
 - `src/layouts`: layout principal de app (sidebar + header)
@@ -75,9 +87,16 @@ npm run typecheck
 - `src/views`: pantallas (`/login`, `/app/tickets`)
 - `src/request`: cliente Axios e interceptores
 - `src/utils`: helpers (JWT)
-- `components.json`: configuracion de shadcn/ui (`new-york`)
+- `src/components/ui`: componentes generados con CLI de shadcn/ui
+- `components.json`: configuracion de shadcn/ui (estilo `new-york`)
 - `server.mjs`: mock API y login JWT
 - `db.json`: datos mock
+
+## Componentes shadcn/ui
+
+Se utilizan componentes de shadcn/ui instalados con el CLI oficial (`npx shadcn@latest add ...`):
+
+- **Input** (`src/components/ui/input.tsx`): usado en login y en el formulario de tickets (titulo, solicitante, email, etiquetas). El resto de la UI (Button, Card, Label, Select con React Aria, Dialog con Radix) se mantiene en `src/components/sui` con el mismo criterio visual.
 
 ## Decisiones tecnicas
 
@@ -119,21 +138,41 @@ Esto garantiza cache separada por filtros, pagina, pageSize y sort.
 - `PUT /tickets/:id`
 - `PATCH /tickets/:id/status`
 
-## Concurrencia (409)
+## Manejo de concurrencia (409)
 
-- En `PUT /tickets/:id` el backend compara el valor recibido en `If-Unmodified-Since` contra `ticket.updatedAt`.
-- Si no coincide, responde `409` con:
-  - `code: "TICKET_CONFLICT"`
-  - `message`
-  - `currentTicket` (version vigente en servidor)
-- El frontend detecta el `409`, muestra mensaje de conflicto y recarga el ticket para editar sobre la ultima version.
+Para evitar que dos ediciones simultaneas del mismo ticket se pisen, se implemento control de concurrencia:
+
+**Backend (`server.mjs`):**
+
+- En `PUT /tickets/:id` se lee el `updatedAt` esperado por el cliente (header `If-Unmodified-Since` o body `expectedUpdatedAt`).
+- Se compara con el `updatedAt` actual del ticket en la base.
+- Si **no coinciden**: se responde **409 Conflict** con `code: "TICKET_CONFLICT"`, `message` y `currentTicket` (version actual en servidor).
+- Si coinciden: se aplica el update y se responde 200.
+
+**Frontend:**
+
+- El servicio de tickets (`tickets.service.ts`) envia `expectedUpdatedAt` en cada edicion y exporta `isTicketConflictError()` para detectar el 409.
+- En la vista de edicion, si la API devuelve 409 se muestra un toast de conflicto y se recarga el ticket (`refetch`) para que el usuario pueda editar sobre la ultima version.
 
 ## Tests
 
-Se agrego base de tests con Vitest + React Testing Library:
+Tests con Vitest y React Testing Library:
 
-- `src/routes/ProtectedRoute.test.tsx`: valida redireccion a `/login` sin sesion.
-- `src/views/LoginView.test.tsx`: valida errores de formulario en submit vacio.
+- **`src/routes/ProtectedRoute.test.tsx`**: redireccion a `/login` cuando no hay sesion.
+- **`src/views/LoginView.test.tsx`**: validacion del formulario (errores al enviar vacio).
+- **`src/services/tickets.service.test.ts`**: propagacion y deteccion del error 409 (concurrencia).
+
+Ejecutar tests:
+
+```bash
+npm run test
+```
+
+Una sola ejecucion:
+
+```bash
+npm run test:run
+```
 
 ## Notas
 
