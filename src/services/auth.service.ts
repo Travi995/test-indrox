@@ -1,20 +1,6 @@
 import { http } from "../request";
-
-export type SessionUser = {
-  id: string;
-  name: string;
-  email: string;
-};
-
-export type LoginPayload = {
-  email: string;
-  password: string;
-};
-
-export type LoginResponse = {
-  accessToken: string;
-  user: SessionUser;
-};
+import type { LoginResponse } from "../interfaces/auth.interface";
+import type { LoginPayload } from "../types/auth.types";
 
 export const authService = {
   login: async (payload: LoginPayload) => {

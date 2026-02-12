@@ -1,32 +1,8 @@
 import { http } from "../request";
-
-export type TicketStatus = "OPEN" | "IN_PROGRESS" | "RESOLVED" | "CLOSED";
-export type TicketPriority = "LOW" | "MEDIUM" | "HIGH";
-
-export type Ticket = {
-  id: string;
-  code: string;
-  title: string;
-  description: string;
-  status: TicketStatus;
-  priority: TicketPriority;
-  createdAt: string;
-  updatedAt: string;
-  requester: { name: string; email: string };
-  tags: string[];
-};
-
-export type ListTicketsParams = {
-  query?: string;
-  status?: TicketStatus;
-  priority?: TicketPriority;
-  sort?: "updatedAt.asc" | "updatedAt.desc";
-  page?: number;
-  pageSize?: number;
-};
+import type { ListTicketsParams, Ticket, TicketsListResult } from "../interfaces/ticket.interface";
 
 export const ticketsService = {
-  list: async (params: ListTicketsParams = {}) => {
+  list: async (params: ListTicketsParams = {}, signal?: AbortSignal): Promise<TicketsListResult> => {
     const {
       query = "",
       status,
@@ -38,36 +14,66 @@ export const ticketsService = {
 
     const [sortField, sortOrder] = sort.split(".");
 
-    const { data } = await http.get<Ticket[]>("/tickets", {
+    const { data, headers } = await http.get<Ticket[] | { data: Ticket[]; items?: number; pages?: number }>(
+      "/tickets",
+      {
       params: {
         _page: page,
         _per_page: pageSize,
+        _limit: pageSize,
         _sort: sortField,
         _order: sortOrder,
         q: query || undefined,
         status: status || undefined,
         priority: priority || undefined,
       },
+      signal,
     });
 
+    const items = Array.isArray(data) ? data : data.data;
+    const headerTotal = Number(headers["x-total-count"] ?? 0);
+    const payloadTotal = !Array.isArray(data) && typeof data.items === "number" ? data.items : 0;
+    const total = headerTotal || payloadTotal || items.length;
+    const payloadPages = !Array.isArray(data) && typeof data.pages === "number" ? data.pages : 0;
+    const totalPages = payloadPages || Math.max(1, Math.ceil(total / pageSize));
+
+    return {
+      items,
+      page,
+      pageSize,
+      total,
+      totalPages,
+    };
+  },
+  getById: async (id: string, signal?: AbortSignal): Promise<Ticket> => {
+    const { data } = await http.get<Ticket>(`/tickets/${id}`, { signal });
     return data;
   },
-  getById: async (id: string) => {
-    const { data } = await http.get<Ticket>(`/tickets/${id}`);
-    return data;
-  },
-  create: async (payload: Omit<Ticket, "id" | "code" | "createdAt" | "updatedAt">) => {
+  create: async (
+    payload: Omit<Ticket, "id" | "code" | "createdAt" | "updatedAt">,
+    signal?: AbortSignal,
+  ): Promise<Ticket> => {
     const now = new Date().toISOString();
     const code = `TCK-${Math.floor(Math.random() * 1_000_000)
       .toString()
       .padStart(6, "0")}`;
 
     const { data } = await http.post<Ticket>("/tickets", {
-      ...payload,
-      code,
-      createdAt: now,
-      updatedAt: now,
-    });
+        ...payload,
+        code,
+        createdAt: now,
+        updatedAt: now,
+      },
+      { signal },
+    );
+    return data;
+  },
+  patchStatus: async (id: string, status: Ticket["status"], signal?: AbortSignal): Promise<Ticket> => {
+    const { data } = await http.patch<Ticket>(
+      `/tickets/${id}`,
+      { status, updatedAt: new Date().toISOString() },
+      { signal },
+    );
     return data;
   },
 };

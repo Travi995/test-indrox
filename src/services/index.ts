@@ -1,9 +1,6 @@
 export { authService } from "./auth.service";
-export type { LoginPayload, LoginResponse, SessionUser } from "./auth.service";
 export { ticketsService } from "./tickets.service";
-export type {
-  ListTicketsParams,
-  Ticket,
-  TicketPriority,
-  TicketStatus,
-} from "./tickets.service";
+export type { LoginResponse, SessionUser } from "../interfaces/auth.interface";
+export type { ListTicketsParams, Ticket, TicketRequester, TicketsListResult } from "../interfaces/ticket.interface";
+export type { LoginPayload } from "../types/auth.types";
+export type { TicketPriority, TicketSort, TicketStatus } from "../types/ticket.types";
