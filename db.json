@@ -1,0 +1,102 @@
+{
+  "users": [
+    {
+      "id": "usr-001",
+      "name": "Admin Demo",
+      "email": "admin@indrox.local",
+      "password": "12345678"
+    }
+  ],
+  "tickets": [
+    {
+      "id": "1",
+      "code": "TCK-000001",
+      "title": "No puedo entrar al portal",
+      "description": "Usuario reporta error al iniciar sesion desde navegador movil.",
+      "status": "OPEN",
+      "priority": "HIGH",
+      "createdAt": "2026-02-01T10:10:00.000Z",
+      "updatedAt": "2026-02-10T08:40:00.000Z",
+      "requester": {
+        "name": "Maria Perez",
+        "email": "maria.perez@empresa.com"
+      },
+      "tags": ["login", "mobile"]
+    },
+    {
+      "id": "2",
+      "code": "TCK-000002",
+      "title": "Solicitud de nuevo usuario ERP",
+      "description": "Necesito crear usuario para nuevo analista de operaciones.",
+      "status": "IN_PROGRESS",
+      "priority": "MEDIUM",
+      "createdAt": "2026-02-02T12:00:00.000Z",
+      "updatedAt": "2026-02-10T12:15:00.000Z",
+      "requester": {
+        "name": "Jose Molina",
+        "email": "jose.molina@empresa.com"
+      },
+      "tags": ["usuarios"]
+    },
+    {
+      "id": "3",
+      "code": "TCK-000003",
+      "title": "Error en exportacion de reportes",
+      "description": "Al exportar reportes en formato xlsx se descarga archivo vacio.",
+      "status": "OPEN",
+      "priority": "HIGH",
+      "createdAt": "2026-02-03T09:35:00.000Z",
+      "updatedAt": "2026-02-11T07:50:00.000Z",
+      "requester": {
+        "name": "Carla Reyes",
+        "email": "carla.reyes@empresa.com"
+      },
+      "tags": ["reportes", "excel"]
+    },
+    {
+      "id": "4",
+      "code": "TCK-000004",
+      "title": "Actualizar datos de proveedor",
+      "description": "No se puede editar el telefono del proveedor en el modulo compras.",
+      "status": "RESOLVED",
+      "priority": "LOW",
+      "createdAt": "2026-02-04T15:10:00.000Z",
+      "updatedAt": "2026-02-09T16:20:00.000Z",
+      "requester": {
+        "name": "Ricardo Solis",
+        "email": "ricardo.solis@empresa.com"
+      },
+      "tags": ["compras", "proveedores"]
+    },
+    {
+      "id": "5",
+      "code": "TCK-000005",
+      "title": "Lentitud en lista de facturas",
+      "description": "La pantalla de facturas tarda mas de 20 segundos en cargar.",
+      "status": "IN_PROGRESS",
+      "priority": "HIGH",
+      "createdAt": "2026-02-05T11:45:00.000Z",
+      "updatedAt": "2026-02-11T18:30:00.000Z",
+      "requester": {
+        "name": "Ana Torres",
+        "email": "ana.torres@empresa.com"
+      },
+      "tags": ["performance", "facturas"]
+    },
+    {
+      "id": "6",
+      "code": "TCK-000006",
+      "title": "Cerrar ticket duplicado",
+      "description": "Se registro ticket duplicado para el mismo incidente de red.",
+      "status": "CLOSED",
+      "priority": "LOW",
+      "createdAt": "2026-02-06T08:05:00.000Z",
+      "updatedAt": "2026-02-08T09:00:00.000Z",
+      "requester": {
+        "name": "Luis Vega",
+        "email": "luis.vega@empresa.com"
+      },
+      "tags": ["red", "duplicado"]
+    }
+  ]
+}
