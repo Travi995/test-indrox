@@ -45,7 +45,6 @@ const ensureAuth = async (req, res, next) => {
   }
 };
 
-app.use(json());
 app.use((req, res, next) => {
   res.setHeader("Access-Control-Allow-Origin", ALLOWED_ORIGIN);
   res.setHeader("Access-Control-Allow-Methods", "GET,POST,PUT,PATCH,DELETE,OPTIONS");
@@ -59,7 +58,7 @@ app.use((req, res, next) => {
   next();
 });
 
-app.post("/auth/login", async (req, res) => {
+app.post("/auth/login", json(), async (req, res) => {
   const { email, password } = req.body ?? {};
   const user = db.data.users.find((item) => item.email === email && item.password === password);
 
@@ -75,6 +74,59 @@ app.post("/auth/login", async (req, res) => {
 });
 
 app.use("/tickets", ensureAuth);
+app.get("/tickets", (req, res) => {
+  const query = typeof req.query.q === "string" ? req.query.q.trim().toLowerCase() : "";
+  const status = typeof req.query.status === "string" ? req.query.status : "";
+  const priority = typeof req.query.priority === "string" ? req.query.priority : "";
+  const sortField = typeof req.query._sort === "string" ? req.query._sort : "updatedAt";
+  const sortOrder = typeof req.query._order === "string" ? req.query._order : "desc";
+  const page = Number(req.query._page ?? req.query.page ?? 1);
+  const pageSize = Number(req.query._per_page ?? req.query.pageSize ?? req.query._limit ?? 10);
+
+  let filtered = [...db.data.tickets];
+
+  if (query) {
+    filtered = filtered.filter((ticket) => {
+      const haystack = `${ticket.title} ${ticket.code} ${ticket.requester?.email ?? ""}`.toLowerCase();
+      return haystack.includes(query);
+    });
+  }
+
+  if (status) {
+    filtered = filtered.filter((ticket) => ticket.status === status);
+  }
+
+  if (priority) {
+    filtered = filtered.filter((ticket) => ticket.priority === priority);
+  }
+
+  filtered.sort((a, b) => {
+    const aValue = String(a[sortField] ?? "");
+    const bValue = String(b[sortField] ?? "");
+    const comparison = aValue.localeCompare(bValue);
+    return sortOrder === "asc" ? comparison : -comparison;
+  });
+
+  const safePage = Number.isFinite(page) && page > 0 ? page : 1;
+  const safePageSize = Number.isFinite(pageSize) && pageSize > 0 ? pageSize : 10;
+  const totalItems = filtered.length;
+  const totalPages = totalItems ? Math.ceil(totalItems / safePageSize) : 1;
+  const start = (safePage - 1) * safePageSize;
+  const end = start + safePageSize;
+  const data = filtered.slice(start, end);
+
+  const payload = {
+    first: 1,
+    prev: safePage > 1 ? safePage - 1 : null,
+    next: safePage < totalPages ? safePage + 1 : null,
+    last: totalPages,
+    pages: totalPages,
+    items: totalItems,
+    data,
+  };
+
+  res.json(payload);
+});
 app.use(jsonServerApp);
 
 app.listen(3001, () => {

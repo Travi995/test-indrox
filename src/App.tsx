@@ -1,7 +1,7 @@
 import { Navigate, Route, Routes } from "react-router-dom";
 import { AppLayout } from "./layouts";
 import { ProtectedRoute } from "./routes";
-import { LoginView, NotFoundView, TicketNewView, TicketsListView } from "./views";
+import { LoginView, NotFoundView, TicketsListView } from "./views";
 
 function App() {
   return (
@@ -11,7 +11,6 @@ function App() {
       <Route element={<ProtectedRoute />}>
         <Route path="/app" element={<AppLayout />}>
           <Route path="tickets" element={<TicketsListView />} />
-          <Route path="tickets/new" element={<TicketNewView />} />
         </Route>
       </Route>
       <Route path="*" element={<NotFoundView />} />

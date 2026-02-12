@@ -5,6 +5,7 @@ import { cn } from "../components-utilities";
 interface TicketsTableProps {
   items: Ticket[];
   onSelectTicket: (id: string) => void;
+  className?: string;
 }
 
 function getStatusClass(status: Ticket["status"]) {
@@ -20,12 +21,12 @@ function getPriorityClass(priority: Ticket["priority"]) {
   return "bg-slate-200 text-slate-700";
 }
 
-export function TicketsTable({ items, onSelectTicket }: TicketsTableProps) {
+export function TicketsTable({ items, onSelectTicket, className }: TicketsTableProps) {
   const shouldReduceMotion = useReducedMotion();
 
   return (
     <motion.div
-      className="hidden overflow-x-auto rounded-xl border border-white/10 bg-slate-900/45 backdrop-blur-xl md:block"
+      className={`hidden h-full overflow-auto rounded-xl border border-white/10 bg-slate-900/45 backdrop-blur-xl md:block ${className ?? ""}`}
       initial={shouldReduceMotion ? undefined : { opacity: 0, y: 10 }}
       animate={shouldReduceMotion ? undefined : { opacity: 1, y: 0 }}
       transition={shouldReduceMotion ? undefined : { duration: 0.22 }}

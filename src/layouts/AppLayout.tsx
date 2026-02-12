@@ -1,42 +1,19 @@
-import { NavLink, Outlet } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 import { useAuthStore } from "../stores";
-
-const links = [
-  { to: "/app/tickets", label: "Tickets" },
-  { to: "/app/tickets/new", label: "Nuevo ticket" },
-];
 
 export function AppLayout() {
   const user = useAuthStore((state) => state.user);
   const logout = useAuthStore((state) => state.logout);
 
   return (
-    <div className="grid min-h-screen grid-cols-1 bg-transparent md:grid-cols-[240px_1fr]">
-      <aside className="border-r border-white/10 bg-slate-900/55 p-4 backdrop-blur-xl">
-        <h1 className="text-lg font-semibold text-brand-100">ERP Ticketera</h1>
-        <nav className="mt-6 flex flex-col gap-2">
-          {links.map((link) => (
-            <NavLink
-              key={link.to}
-              to={link.to}
-              className={({ isActive }) =>
-                `rounded-md px-3 py-2 text-sm transition ${
-                  isActive
-                    ? "bg-brand-500/90 text-white shadow-lg shadow-brand-900/30"
-                    : "text-slate-200 hover:bg-white/10 hover:text-white"
-                }`
-              }
-            >
-              {link.label}
-            </NavLink>
-          ))}
-        </nav>
-      </aside>
-
-      <div className="flex min-w-0 flex-col">
+    <div className="min-h-screen bg-transparent md:h-screen md:overflow-hidden">
+      <div className="flex min-w-0 flex-col md:h-screen md:overflow-hidden">
         <header className="border-b border-white/10 bg-slate-900/45 px-4 py-4 backdrop-blur-xl sm:px-6">
-          <div className="flex items-center justify-between gap-3">
-            <p className="text-sm text-slate-300">Sistema ERP / Mesa de ayuda</p>
+          <div className="mx-auto flex w-full max-w-7xl flex-wrap items-center justify-between gap-3">
+            <div>
+              <h1 className="text-lg font-semibold text-brand-100">ERP Ticketera</h1>
+              <p className="text-xs text-slate-300">Sistema ERP / Mesa de ayuda</p>
+            </div>
             <div className="flex items-center gap-3">
               <p className="text-sm text-slate-200">{user?.email ?? "Sin sesión"}</p>
               <button
@@ -49,8 +26,10 @@ export function AppLayout() {
             </div>
           </div>
         </header>
-        <main className="p-4 sm:p-6">
-          <Outlet />
+        <main className="flex-1 overflow-visible px-4 py-4 sm:px-6 sm:py-6 md:min-h-0 md:overflow-hidden">
+          <div className="mx-auto w-full max-w-7xl md:h-full">
+            <Outlet />
+          </div>
         </main>
       </div>
     </div>

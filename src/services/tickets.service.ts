@@ -68,6 +68,21 @@ export const ticketsService = {
     );
     return data;
   },
+  update: async (
+    id: string,
+    payload: Omit<Ticket, "id" | "code" | "createdAt" | "updatedAt">,
+    signal?: AbortSignal,
+  ): Promise<Ticket> => {
+    const { data } = await http.put<Ticket>(
+      `/tickets/${id}`,
+      {
+        ...payload,
+        updatedAt: new Date().toISOString(),
+      },
+      { signal },
+    );
+    return data;
+  },
   patchStatus: async (id: string, status: Ticket["status"], signal?: AbortSignal): Promise<Ticket> => {
     const { data } = await http.patch<Ticket>(
       `/tickets/${id}`,

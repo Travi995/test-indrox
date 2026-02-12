@@ -21,7 +21,10 @@
         "name": "Maria Perez",
         "email": "maria.perez@empresa.com"
       },
-      "tags": ["login", "mobile"]
+      "tags": [
+        "login",
+        "mobile"
+      ]
     },
     {
       "id": "2",
@@ -36,7 +39,9 @@
         "name": "Jose Molina",
         "email": "jose.molina@empresa.com"
       },
-      "tags": ["usuarios"]
+      "tags": [
+        "usuarios"
+      ]
     },
     {
       "id": "3",
@@ -51,7 +56,10 @@
         "name": "Carla Reyes",
         "email": "carla.reyes@empresa.com"
       },
-      "tags": ["reportes", "excel"]
+      "tags": [
+        "reportes",
+        "excel"
+      ]
     },
     {
       "id": "4",
@@ -66,7 +74,10 @@
         "name": "Ricardo Solis",
         "email": "ricardo.solis@empresa.com"
       },
-      "tags": ["compras", "proveedores"]
+      "tags": [
+        "compras",
+        "proveedores"
+      ]
     },
     {
       "id": "5",
@@ -81,7 +92,10 @@
         "name": "Ana Torres",
         "email": "ana.torres@empresa.com"
       },
-      "tags": ["performance", "facturas"]
+      "tags": [
+        "performance",
+        "facturas"
+      ]
     },
     {
       "id": "6",
@@ -96,7 +110,55 @@
         "name": "Luis Vega",
         "email": "luis.vega@empresa.com"
       },
-      "tags": ["red", "duplicado"]
+      "tags": [
+        "red",
+        "duplicado"
+      ]
+    },
+    {
+      "id": "b0c9",
+      "code": "TCK-639858",
+      "createdAt": "2026-02-12T17:00:28.465Z",
+      "description": "preuba 1 desde todos los angulos entiendes",
+      "priority": "MEDIUM",
+      "requester": {
+        "name": "travieso",
+        "email": "candeal@gmail.com"
+      },
+      "status": "OPEN",
+      "tags": [],
+      "title": "ticket de prueba 1",
+      "updatedAt": "2026-02-12T17:00:28.465Z"
+    },
+    {
+      "id": "eee5",
+      "title": "ticket de prueba",
+      "description": "probandoasda sasd a sda sd",
+      "priority": "MEDIUM",
+      "status": "OPEN",
+      "requester": {
+        "name": "travieso",
+        "email": "joseantoniotravieso259@gmail.com"
+      },
+      "tags": [],
+      "code": "TCK-861705",
+      "createdAt": "2026-02-12T17:07:03.775Z",
+      "updatedAt": "2026-02-12T17:07:03.775Z"
+    },
+    {
+      "id": "48e5",
+      "title": "ticket test tabla",
+      "description": "descripcion suficientemente larga para pasar validacion",
+      "priority": "MEDIUM",
+      "status": "OPEN",
+      "requester": {
+        "name": "travieso",
+        "email": "candeal@gmail.com"
+      },
+      "tags": [],
+      "code": "TCK-777777",
+      "createdAt": "2026-02-12T17:15:30.000Z",
+      "updatedAt": "2026-02-12T17:15:30.000Z"
     }
   ]
 }

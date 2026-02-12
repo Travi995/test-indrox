@@ -36,6 +36,19 @@ export function useCreateTicketMutation() {
   });
 }
 
+export function useUpdateTicketMutation() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: ({ id, payload }: { id: string; payload: Omit<Ticket, "id" | "code" | "createdAt" | "updatedAt"> }) =>
+      ticketsService.update(id, payload),
+    onSuccess: (ticket) => {
+      queryClient.setQueryData(ticketKeys.detail(ticket.id), ticket);
+      queryClient.invalidateQueries({ queryKey: ticketKeys.all });
+    },
+  });
+}
+
 export function usePatchTicketStatusMutation() {
   const queryClient = useQueryClient();
 
