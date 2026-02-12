@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render } from "@testing-library/react";
 import { MemoryRouter, Route, Routes } from "react-router-dom";
 import { afterEach, describe, expect, it } from "vitest";
 import { useAuthStore } from "../stores";
@@ -12,7 +12,7 @@ describe("ProtectedRoute", () => {
   it("redirecciona a login cuando no hay sesion", () => {
     useAuthStore.setState({ user: null, token: null });
 
-    render(
+    const { getByText, queryByText } = render(
       <MemoryRouter initialEntries={["/app/tickets"]}>
         <Routes>
           <Route path="/login" element={<p>Pantalla login</p>} />
@@ -23,7 +23,7 @@ describe("ProtectedRoute", () => {
       </MemoryRouter>,
     );
 
-    expect(screen.getByText("Pantalla login")).toBeInTheDocument();
-    expect(screen.queryByText("Ruta privada")).not.toBeInTheDocument();
+    expect(getByText("Pantalla login")).toBeInTheDocument();
+    expect(queryByText("Ruta privada")).not.toBeInTheDocument();
   });
 });

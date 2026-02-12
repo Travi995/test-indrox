@@ -1,4 +1,4 @@
-import { render, screen } from "@testing-library/react";
+import { render } from "@testing-library/react";
 import userEvent from "@testing-library/user-event";
 import { MemoryRouter } from "react-router-dom";
 import { afterEach, describe, expect, it } from "vitest";
@@ -13,15 +13,15 @@ describe("LoginView", () => {
   it("muestra errores de validacion cuando se envia vacio", async () => {
     const user = userEvent.setup();
 
-    render(
+    const { getByRole, getByText } = render(
       <MemoryRouter>
         <LoginView />
       </MemoryRouter>,
     );
 
-    await user.click(screen.getByRole("button", { name: "Ingresar" }));
+    await user.click(getByRole("button", { name: "Ingresar" }));
 
-    expect(screen.getByText("Ingresa un correo valido")).toBeInTheDocument();
-    expect(screen.getByText("La contraseña debe tener al menos 6 caracteres")).toBeInTheDocument();
+    expect(getByText("Ingresa un correo valido")).toBeInTheDocument();
+    expect(getByText("La contraseña debe tener al menos 6 caracteres")).toBeInTheDocument();
   });
 });
