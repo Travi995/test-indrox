@@ -31,10 +31,10 @@
       "code": "TCK-000002",
       "title": "Solicitud de nuevo usuario ERP",
       "description": "Necesito crear usuario para nuevo analista de operaciones.",
-      "status": "IN_PROGRESS",
+      "status": "CLOSED",
       "priority": "MEDIUM",
       "createdAt": "2026-02-02T12:00:00.000Z",
-      "updatedAt": "2026-02-10T12:15:00.000Z",
+      "updatedAt": "2026-02-12T22:51:21.545Z",
       "requester": {
         "name": "Jose Molina",
         "email": "jose.molina@empresa.com"
@@ -150,7 +150,7 @@
       "title": "ticket test tabla",
       "description": "descripcion suficientemente larga para pasar validacion",
       "priority": "MEDIUM",
-      "status": "OPEN",
+      "status": "IN_PROGRESS",
       "requester": {
         "name": "travieso",
         "email": "candeal@gmail.com"
@@ -158,7 +158,7 @@
       "tags": [],
       "code": "TCK-777777",
       "createdAt": "2026-02-12T17:15:30.000Z",
-      "updatedAt": "2026-02-12T17:15:30.000Z"
+      "updatedAt": "2026-02-12T22:51:29.810Z"
     }
   ]
 }

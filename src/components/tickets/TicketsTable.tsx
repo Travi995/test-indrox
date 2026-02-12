@@ -15,10 +15,10 @@ function getStatusClass(status: Ticket["status"]) {
   return "bg-slate-200 text-slate-700";
 }
 
-function getPriorityClass(priority: Ticket["priority"]) {
-  if (priority === "HIGH") return "bg-rose-100 text-rose-800";
-  if (priority === "MEDIUM") return "bg-orange-100 text-orange-800";
-  return "bg-slate-200 text-slate-700";
+function getPriorityOutlineClass(priority: Ticket["priority"]) {
+  if (priority === "HIGH") return "border border-rose-400/70 text-rose-300 bg-rose-500/10";
+  if (priority === "MEDIUM") return "border border-orange-400/70 text-orange-300 bg-orange-500/10";
+  return "border border-slate-500/60 text-slate-400 bg-white/5";
 }
 
 export function TicketsTable({ items, onSelectTicket, className }: TicketsTableProps) {
@@ -26,7 +26,7 @@ export function TicketsTable({ items, onSelectTicket, className }: TicketsTableP
 
   return (
     <motion.div
-      className={`hidden h-full overflow-auto rounded-xl border border-white/10 bg-slate-900/45 backdrop-blur-xl md:block ${className ?? ""}`}
+      className={`hidden h-full overflow-auto rounded border border-white/10 bg-slate-900/45 backdrop-blur-xl md:block ${className ?? ""}`}
       initial={shouldReduceMotion ? undefined : { opacity: 0, y: 10 }}
       animate={shouldReduceMotion ? undefined : { opacity: 1, y: 0 }}
       transition={shouldReduceMotion ? undefined : { duration: 0.22 }}
@@ -41,13 +41,13 @@ export function TicketsTable({ items, onSelectTicket, className }: TicketsTableP
               Titulo
             </th>
             <th scope="col" className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-300">
-              Estado
+              Solicitante
             </th>
             <th scope="col" className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-300">
               Prioridad
             </th>
             <th scope="col" className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-300">
-              Solicitante
+              Estado
             </th>
             <th scope="col" className="px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-slate-300">
               Actualizado
@@ -66,19 +66,19 @@ export function TicketsTable({ items, onSelectTicket, className }: TicketsTableP
             >
               <td className="whitespace-nowrap px-4 py-3 text-sm font-medium text-slate-200">{ticket.code}</td>
               <td className="px-4 py-3 text-sm text-slate-100">{ticket.title}</td>
-              <td className="px-4 py-3 text-sm">
-                <span className={`rounded-full px-2 py-1 text-xs font-medium ${getStatusClass(ticket.status)}`}>
-                  {ticket.status}
-                </span>
-              </td>
+              <td className="px-4 py-3 text-sm text-slate-300">{ticket.requester.email}</td>
               <td className="px-4 py-3 text-sm">
                 <span
-                  className={`rounded-full px-2 py-1 text-xs font-medium ${getPriorityClass(ticket.priority)}`}
+                  className={`rounded px-2 py-1 text-xs font-medium ${getPriorityOutlineClass(ticket.priority)}`}
                 >
                   {ticket.priority}
                 </span>
               </td>
-              <td className="px-4 py-3 text-sm text-slate-300">{ticket.requester.email}</td>
+              <td className="px-4 py-3 text-sm">
+                <span className={`rounded px-2 py-1 text-xs font-medium ${getStatusClass(ticket.status)}`}>
+                  {ticket.status}
+                </span>
+              </td>
               <td className="whitespace-nowrap px-4 py-3 text-sm text-slate-300">
                 {new Date(ticket.updatedAt).toLocaleString("es-ES")}
               </td>

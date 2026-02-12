@@ -73,8 +73,7 @@ app.post("/auth/login", json(), async (req, res) => {
   res.json({ accessToken, user: safeUser });
 });
 
-app.use("/tickets", ensureAuth);
-app.get("/tickets", (req, res) => {
+app.get("/tickets", ensureAuth, (req, res) => {
   const query = typeof req.query.q === "string" ? req.query.q.trim().toLowerCase() : "";
   const status = typeof req.query.status === "string" ? req.query.status : "";
   const priority = typeof req.query.priority === "string" ? req.query.priority : "";
@@ -128,7 +127,7 @@ app.get("/tickets", (req, res) => {
   res.json(payload);
 });
 
-app.put("/tickets/:id", json(), async (req, res) => {
+app.put("/tickets/:id", ensureAuth, json(), async (req, res) => {
   const { id } = req.params;
   const expectedUpdatedAt =
     req.headers["if-unmodified-since"] ?? req.body?.expectedUpdatedAt ?? req.body?.updatedAt ?? null;
@@ -169,7 +168,7 @@ app.put("/tickets/:id", json(), async (req, res) => {
   res.json(updatedTicket);
 });
 
-app.patch("/tickets/:id/status", json(), async (req, res) => {
+const updateTicketStatus = async (req, res) => {
   const { id } = req.params;
   const index = db.data.tickets.findIndex((ticket) => String(ticket.id) === String(id));
   if (index === -1) {
@@ -194,6 +193,18 @@ app.patch("/tickets/:id/status", json(), async (req, res) => {
   db.data.tickets[index] = updatedTicket;
   await db.write();
   res.json(updatedTicket);
+};
+
+app.patch("/tickets/:id/status", ensureAuth, json(), updateTicketStatus);
+app.put("/tickets/:id/status", ensureAuth, json(), updateTicketStatus);
+app.get("/tickets/:id", ensureAuth, (req, res) => {
+  const { id } = req.params;
+  const ticket = db.data.tickets.find((t) => String(t.id) === String(id));
+  if (!ticket) {
+    res.status(404).json({ message: "Ticket no encontrado" });
+    return;
+  }
+  res.json(ticket);
 });
 app.use(jsonServerApp);
 

@@ -62,6 +62,10 @@ export function usePatchTicketStatusMutation() {
   return useMutation({
     mutationFn: ({ id, status }: { id: string; status: Ticket["status"] }) =>
       ticketsService.patchStatus(id, status),
+    onSuccess: (updatedTicket) => {
+      queryClient.setQueryData(ticketKeys.detail(updatedTicket.id), updatedTicket);
+      queryClient.invalidateQueries({ queryKey: ticketKeys.all });
+    },
     onMutate: async ({ id, status }) => {
       await queryClient.cancelQueries({ queryKey: ticketKeys.all });
       const previousLists = queryClient.getQueriesData({ queryKey: [...ticketKeys.all, "list"] });

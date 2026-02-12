@@ -14,10 +14,10 @@ function getStatusClass(status: Ticket["status"]) {
   return "bg-slate-200 text-slate-700";
 }
 
-function getPriorityClass(priority: Ticket["priority"]) {
-  if (priority === "HIGH") return "bg-rose-100 text-rose-800";
-  if (priority === "MEDIUM") return "bg-orange-100 text-orange-800";
-  return "bg-slate-200 text-slate-700";
+function getPriorityOutlineClass(priority: Ticket["priority"]) {
+  if (priority === "HIGH") return "border border-rose-400/70 text-rose-300 bg-rose-500/10";
+  if (priority === "MEDIUM") return "border border-orange-400/70 text-orange-300 bg-orange-500/10";
+  return "border border-slate-500/60 text-slate-400 bg-white/5";
 }
 
 export function TicketsMobileList({ items, onSelectTicket, className }: TicketsMobileListProps) {
@@ -31,7 +31,7 @@ export function TicketsMobileList({ items, onSelectTicket, className }: TicketsM
             key={ticket.id}
             type="button"
             onClick={() => onSelectTicket(ticket.id)}
-            className="rounded-xl border border-white/10 bg-slate-900/45 p-4 text-left backdrop-blur-xl transition hover:border-brand-300/60 hover:bg-slate-900/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300"
+            className="rounded border border-white/10 bg-slate-900/45 p-4 text-left backdrop-blur-xl transition hover:border-brand-300/60 hover:bg-slate-900/60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300"
             initial={shouldReduceMotion ? undefined : { opacity: 0, y: 8 }}
             animate={shouldReduceMotion ? undefined : { opacity: 1, y: 0 }}
             transition={shouldReduceMotion ? undefined : { duration: 0.18, delay: index * 0.02 }}
@@ -40,13 +40,13 @@ export function TicketsMobileList({ items, onSelectTicket, className }: TicketsM
             <p className="mt-1 line-clamp-2 text-sm font-medium text-slate-100">{ticket.title}</p>
             <p className="mt-2 text-xs text-slate-300">{ticket.requester.email}</p>
             <div className="mt-3 flex flex-wrap items-center gap-2">
-              <span className={`rounded-full px-2 py-1 text-xs font-medium ${getStatusClass(ticket.status)}`}>
-                {ticket.status}
-              </span>
               <span
-                className={`rounded-full px-2 py-1 text-xs font-medium ${getPriorityClass(ticket.priority)}`}
+                className={`rounded px-2 py-1 text-xs font-medium ${getPriorityOutlineClass(ticket.priority)}`}
               >
                 {ticket.priority}
+              </span>
+              <span className={`rounded px-2 py-1 text-xs font-medium ${getStatusClass(ticket.status)}`}>
+                {ticket.status}
               </span>
               <span className="ml-auto text-xs text-slate-400">
                 {new Date(ticket.updatedAt).toLocaleDateString("es-ES")}

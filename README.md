@@ -1,6 +1,6 @@
 # ERP Ticketera - Frontend (React + Vite)
 
-Mini modulo ERP/ticketera con autenticacion JWT mock, rutas protegidas, listado de tickets con filtros/paginacion, detalle y formulario de creacion/edicion.
+Mini modulo ERP/ticketera con autenticacion JWT mock, rutas protegidas, listado de tickets con filtros/paginacion, detalle de ticket y formulario de creacion/edicion (modal "Crear nuevo ticket" y modal "Editar ticket"). El formulario muestra titulo, descripcion, solicitante y email como campos principales; prioridad, estado y etiquetas van en un collapsible "Opciones avanzadas".
 
 ## Stack
 
@@ -78,25 +78,28 @@ npm run test:run
 
 ## Estructura de carpetas
 
+- `src/config`: configuracion (query client, toaster)
+- `src/contexts`: contexto de UI (ej. SidebarContext para sidebar colapsable)
+- `src/interfaces`: interfaces TypeScript por dominio (auth, ticket)
 - `src/layouts`: layout principal de app (sidebar + header)
 - `src/routes`: proteccion de rutas y watcher de sesion
 - `src/stores`: estado global con Zustand
+- `src/types`: tipos y enums (auth, ticket)
 - `src/querys`: hooks/mutaciones de React Query y query keys
 - `src/services`: capa de llamadas HTTP
-- `src/components`: UI reusable y modulo tickets
-- `src/views`: pantallas (`/login`, `/app/tickets`)
 - `src/request`: cliente Axios e interceptores
 - `src/utils`: helpers (JWT)
-- `src/components/ui`: componentes generados con CLI de shadcn/ui
+- `src/components`: UI reusable y modulo tickets (`sui/`, `ui/`, `tickets/`)
+- `src/views`: pantallas (`/login`, `/app/tickets`, ComingSoon, Loader, NotFound)
 - `components.json`: configuracion de shadcn/ui (estilo `new-york`)
 - `server.mjs`: mock API y login JWT
 - `db.json`: datos mock
 
-## Componentes shadcn/ui
+## Componentes y UI
 
-Se utilizan componentes de shadcn/ui instalados con el CLI oficial (`npx shadcn@latest add ...`):
-
-- **Input** (`src/components/ui/input.tsx`): usado en login y en el formulario de tickets (titulo, solicitante, email, etiquetas). El resto de la UI (Button, Card, Label, Select con React Aria, Dialog con Radix) se mantiene en `src/components/sui` con el mismo criterio visual.
+- **shadcn/ui**: Input en `src/components/ui/input.tsx` (login y formulario de tickets). El resto de la UI (Button, Card, Label, Select con React Aria, Dialog con Radix) esta en `src/components/sui` con paleta slate/brand.
+- **Formulario de tickets**: campos principales visibles (titulo, descripcion, solicitante, email); prioridad, estado y etiquetas dentro del collapsible "Opciones avanzadas" (icono ChevronRight en tonos slate).
+- **Selector de estado del ticket (`TicketStatusSelect`)**: componente reutilizable para elegir o cambiar el estado del ticket (OPEN, IN_PROGRESS, RESOLVED, CLOSED). Se usa en el modal de detalle del ticket (cambiar estado sin abrir el formulario) y en el modal de edicion (formulario, dentro de Opciones avanzadas). Esta implementado con SelectAria (React Aria) porque el control anterior para esta funcionalidad daba problemas de z-index e interactividad dentro de modales (los clics en las opciones no se registraban correctamente).
 
 ## Decisiones tecnicas
 
