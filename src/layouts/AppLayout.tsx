@@ -1,24 +1,56 @@
-import { Outlet } from "react-router-dom";
+import { NavLink, Outlet, useNavigate } from "react-router-dom";
 import { useAuthStore } from "../stores";
 
+const links = [
+  { to: "/app/tickets", label: "Tickets" },
+];
+
 export function AppLayout() {
+  const navigate = useNavigate();
   const user = useAuthStore((state) => state.user);
   const logout = useAuthStore((state) => state.logout);
 
   return (
-    <div className="min-h-screen bg-transparent md:h-screen md:overflow-hidden">
-      <div className="flex min-w-0 flex-col md:h-screen md:overflow-hidden">
+    <div className="grid min-h-screen grid-cols-1 bg-transparent md:h-screen md:min-h-0 md:overflow-hidden md:grid-cols-[220px_1fr]">
+      <a
+        href="#main-content"
+        className="sr-only z-50 rounded-md bg-brand-500 px-3 py-2 text-sm font-medium text-white focus:not-sr-only focus:absolute focus:left-3 focus:top-3"
+      >
+        Saltar al contenido principal
+      </a>
+      <aside className="border-r border-white/10 bg-slate-900/55 p-4 backdrop-blur-xl">
+        <h1 className="text-lg font-semibold text-brand-100">ERP Ticketera</h1>
+        <nav className="mt-6 flex flex-col gap-2">
+          {links.map((link) => (
+            <NavLink
+              key={link.to}
+              to={link.to}
+              className={({ isActive }) =>
+                `rounded-md px-3 py-2 text-sm transition ${
+                  isActive
+                    ? "bg-brand-500/90 text-white shadow-lg shadow-brand-900/30"
+                    : "text-slate-200 hover:bg-white/10 hover:text-white"
+                }`
+              }
+            >
+              {link.label}
+            </NavLink>
+          ))}
+        </nav>
+      </aside>
+
+      <div className="flex min-w-0 flex-col md:min-h-0 md:overflow-hidden">
         <header className="border-b border-white/10 bg-slate-900/45 px-4 py-4 backdrop-blur-xl sm:px-6">
           <div className="mx-auto flex w-full max-w-7xl flex-wrap items-center justify-between gap-3">
-            <div>
-              <h1 className="text-lg font-semibold text-brand-100">ERP Ticketera</h1>
-              <p className="text-xs text-slate-300">Sistema ERP / Mesa de ayuda</p>
-            </div>
+            <p className="text-sm text-slate-300">Sistema ERP / Mesa de ayuda</p>
             <div className="flex items-center gap-3">
               <p className="text-sm text-slate-200">{user?.email ?? "Sin sesión"}</p>
               <button
                 type="button"
-                onClick={logout}
+                onClick={() => {
+                  logout();
+                  navigate("/login", { replace: true });
+                }}
                 className="rounded-md border border-white/20 bg-white/5 px-3 py-1.5 text-xs font-medium text-slate-100 transition hover:bg-white/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-300"
               >
                 Cerrar sesión
@@ -26,7 +58,10 @@ export function AppLayout() {
             </div>
           </div>
         </header>
-        <main className="flex-1 overflow-visible px-4 py-4 sm:px-6 sm:py-6 md:min-h-0 md:overflow-hidden">
+        <main
+          id="main-content"
+          className="flex-1 overflow-visible px-4 py-4 sm:px-6 sm:py-6 md:min-h-0 md:overflow-hidden"
+        >
           <div className="mx-auto w-full max-w-7xl md:h-full">
             <Outlet />
           </div>

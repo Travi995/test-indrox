@@ -1,73 +1,121 @@
-# React + TypeScript + Vite
+# ERP Ticketera - Frontend (React + Vite)
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+Mini modulo ERP/ticketera con autenticacion JWT mock, rutas protegidas, listado de tickets con filtros/paginacion, detalle y formulario de creacion/edicion.
 
-Currently, two official plugins are available:
+## Stack
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) (or [oxc](https://oxc.rs) when used in [rolldown-vite](https://vite.dev/guide/rolldown)) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+- React + Vite + TypeScript
+- Tailwind CSS
+- Zustand
+- TanStack React Query
+- React Hook Form + Zod
+- Axios
+- jose
+- Framer Motion
+- Lucide React
+- class-variance-authority + clsx + tailwind-merge
+- Radix UI (Dialog)
+- React Aria Components (Select personalizado)
+- Mock API con JSON Server + servidor custom (`server.mjs`)
 
-## React Compiler
+## Setup
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+Requisitos:
 
-## Expanding the ESLint configuration
+- Node.js 20+
+- npm 10+
 
-If you are developing a production application, we recommend updating the configuration to enable type-aware lint rules:
+Instalacion:
 
-```js
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-
-      // Remove tseslint.configs.recommended and replace with this
-      tseslint.configs.recommendedTypeChecked,
-      // Alternatively, use this for stricter rules
-      tseslint.configs.strictTypeChecked,
-      // Optionally, add this for stylistic rules
-      tseslint.configs.stylisticTypeChecked,
-
-      // Other configs...
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm install
 ```
 
-You can also install [eslint-plugin-react-x](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-x) and [eslint-plugin-react-dom](https://github.com/Rel1cx/eslint-react/tree/main/packages/plugins/eslint-plugin-react-dom) for React-specific lint rules:
+## Comandos
 
-```js
-// eslint.config.js
-import reactX from 'eslint-plugin-react-x'
-import reactDom from 'eslint-plugin-react-dom'
+Iniciar frontend:
 
-export default defineConfig([
-  globalIgnores(['dist']),
-  {
-    files: ['**/*.{ts,tsx}'],
-    extends: [
-      // Other configs...
-      // Enable lint rules for React
-      reactX.configs['recommended-typescript'],
-      // Enable lint rules for React DOM
-      reactDom.configs.recommended,
-    ],
-    languageOptions: {
-      parserOptions: {
-        project: ['./tsconfig.node.json', './tsconfig.app.json'],
-        tsconfigRootDir: import.meta.dirname,
-      },
-      // other options...
-    },
-  },
-])
+```bash
+npm run dev
 ```
+
+Iniciar mock API:
+
+```bash
+npm run server
+```
+
+Build de produccion:
+
+```bash
+npm run build
+```
+
+Lint:
+
+```bash
+npm run lint
+```
+
+Typecheck:
+
+```bash
+npm run typecheck
+```
+
+## Estructura de carpetas
+
+- `src/layouts`: layout principal de app (sidebar + header)
+- `src/routes`: proteccion de rutas y watcher de sesion
+- `src/stores`: estado global con Zustand
+- `src/querys`: hooks/mutaciones de React Query y query keys
+- `src/services`: capa de llamadas HTTP
+- `src/components`: UI reusable y modulo tickets
+- `src/views`: pantallas (`/login`, `/app/tickets`)
+- `src/request`: cliente Axios e interceptores
+- `src/utils`: helpers (JWT)
+- `server.mjs`: mock API y login JWT
+- `db.json`: datos mock
+
+## Decisiones tecnicas
+
+- Se usa React Query para estado de servidor y cache.
+- Se usa Zustand para estado global de auth.
+- La sesion persiste en localStorage solo con `user` y `token` usando `partialize`.
+- El listado de tickets usa paginacion server-like y filtros en backend mock.
+- El cambio de estado de ticket usa optimistic update con rollback.
+
+## Auth y expiracion
+
+- Login: `POST /auth/login` retorna `{ accessToken, user }`.
+- El token se guarda en `authStore`.
+- Rutas protegidas en `ProtectedRoute`.
+- `SessionWatcher` revisa expiracion periodicamente y ejecuta logout.
+- Interceptor de Axios:
+  - agrega `Authorization: Bearer <token>`
+  - ante token expirado fuerza logout y rechaza la request
+  - ante `401` ejecuta logout
+- Logout limpia sesion y cache de React Query.
+
+## Diseno de query keys
+
+En `src/querys/index.ts`:
+
+- `ticketKeys.all = ["tickets"]`
+- `ticketKeys.list(params) = ["tickets", "list", params]`
+- `ticketKeys.detail(id) = ["tickets", "detail", id]`
+
+Esto garantiza cache separada por filtros, pagina, pageSize y sort.
+
+## Endpoints mock
+
+- `POST /auth/login`
+- `GET /tickets?q=&status=&priority=&_sort=updatedAt&_order=desc&_page=1&_per_page=10`
+- `GET /tickets/:id`
+- `POST /tickets`
+- `PUT /tickets/:id`
+- `PATCH /tickets/:id/status`
+
+## Notas
+
+- El manejo de conflicto `409` y tests automatizados no estan incluidos en esta iteracion.

@@ -19,7 +19,7 @@ export function SessionWatcher() {
     };
 
     check();
-    const id = window.setInterval(check, 30_000);
+    const id = window.setInterval(check, 10_000);
     return () => window.clearInterval(id);
   }, [location.pathname, navigate]);
 

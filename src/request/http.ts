@@ -1,4 +1,5 @@
 import axios from "axios";
+import { AxiosError } from "axios";
 import { isTokenExpired } from "../utils/jwt";
 import { useAuthStore } from "../stores";
 
@@ -13,7 +14,7 @@ http.interceptors.request.use((config) => {
 
   if (isTokenExpired(token)) {
     logout();
-    return config;
+    return Promise.reject(new AxiosError("Session expired", "ERR_SESSION_EXPIRED", config));
   }
 
   config.headers.Authorization = `Bearer ${token}`;
