@@ -1,3 +1,4 @@
+export { ComingSoonView } from "./ComingSoonView";
 export { LoaderView } from "./LoaderView";
 export { LoginView } from "./LoginView";
 export { NotFoundView } from "./NotFoundView";
